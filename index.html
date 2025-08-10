@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic E-commerce & Blog</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a clean look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc;
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #4c51bf, #7f9cf5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-lg py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-store text-xl text-indigo-600"></i>
+            <h1 class="text-2xl font-bold text-gray-800">ShopSphere</h1>
+        </div>
+        <nav class="mt-4 md:mt-0">
+            <ul class="flex space-x-4 md:space-x-8">
+                <li><a href="#" id="home-link" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors duration-200">Home</a></li>
+                <li><a href="#" id="products-link" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors duration-200">Products</a></li>
+                <li><a href="#" id="blog-link" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors duration-200">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content Area - This is where the magic happens! -->
+    <main id="main-content" class="flex-grow p-6 md:p-12">
+        <!-- Dynamic content will be injected here by JavaScript -->
+    </main>
+
+    <!-- Product Details Modal (initially hidden) -->
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-6 relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div id="modal-content" class="flex flex-col md:flex-row items-center gap-6">
+                <!-- Modal content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-8 px-6 md:px-12 mt-auto">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">&copy; 2024 ShopSphere. All rights reserved. | <a href="#" class="text-indigo-400 hover:underline">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM elements
+        const mainContent = document.getElementById('main-content');
+        const homeLink = document.getElementById('home-link');
+        const productsLink = document.getElementById('products-link');
+        const blogLink = document.getElementById('blog-link');
+        const productModal = document.getElementById('product-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // --- Simulated "Backend" Data ---
+        // This is a placeholder for a real database. We'll use a local object for this example.
+        const productData = [
+            { id: 1, name: 'Vintage Leather Wallet', price: 49.99, image: 'https://placehold.co/400x400/222/fff?text=Wallet', description: 'A stylish and durable vintage leather wallet with multiple card slots and a coin pouch. Handcrafted to perfection.' },
+            { id: 2, name: 'Classic Denim Jacket', price: 89.50, image: 'https://placehold.co/400x400/60a5fa/fff?text=Jacket', description: 'Timeless classic denim jacket, perfect for any casual occasion. Features a comfortable fit and durable material.' },
+            { id: 3, name: 'Minimalist Coffee Mug', price: 15.00, image: 'https://placehold.co/400x400/f3f4f6/000?text=Mug', description: 'Enjoy your morning coffee in this simple, yet elegant ceramic mug. Dishwasher and microwave safe.' },
+            { id: 4, name: 'Wireless Bluetooth Headphones', price: 129.99, image: 'https://placehold.co/400x400/e5e7eb/000?text=Headphones', description: 'Experience high-quality audio with these comfortable wireless headphones. Long battery life and clear sound.' },
+            { id: 5, name: 'Smartwatch', price: 299.99, image: 'https://placehold.co/400x400/4c51bf/fff?text=Smartwatch', description: 'Stay connected and track your fitness goals with this feature-rich smartwatch. Water-resistant and with a vibrant display.' },
+            { id: 6, name: 'Portable Power Bank', price: 35.00, image: 'https://placehold.co/400x400/a0aec0/fff?text=Power+Bank', description: 'Never run out of battery on the go. This compact power bank provides multiple charges for your devices.' },
+            { id: 7, name: 'Handcrafted Wooden Pen', price: 25.50, image: 'https://placehold.co/400x400/b5651d/fff?text=Wooden+Pen', description: 'A unique and elegant pen, handcrafted from sustainable wood. A perfect gift for writers and professionals.' },
+            { id: 8, name: 'Organic Cotton T-Shirt', price: 29.00, image: 'https://placehold.co/400x400/7f9cf5/fff?text=T-Shirt', description: 'Soft, breathable, and ethically sourced. This organic cotton t-shirt is a comfortable and conscious choice for your wardrobe.' },
+        ];
+
+        const blogData = [
+            { id: 1, title: 'The Art of Choosing the Perfect Wallet', snippet: 'Finding the right wallet is more than just about storing cash and cards; it\'s a statement of style and practicality...' },
+            { id: 2, title: 'Denim: A Fashion Staple That Never Fades', snippet: 'From working-class attire to high-fashion runways, denim has a rich history and continues to be a wardrobe essential...' },
+            { id: 3, title: 'Your Guide to a Perfect Coffee Break', snippet: 'Transform your daily coffee routine into a moment of pure bliss. Learn about different brewing methods and essential accessories...' },
+            { id: 4, title: 'Gadgets That Make Your Life Easier', snippet: 'Explore our top picks for smart gadgets that simplify daily tasks and keep you connected...' },
+            { id: 5, title: 'Sustainable Fashion: What You Need to Know', snippet: 'Learn about the importance of sustainable clothing and how to make more eco-friendly choices...' },
+        ];
+
+        // --- API Simulation Function ---
+        // This function simulates an asynchronous HTTP request using the Fetch API.
+        // In a real application, you would replace this with a call to a live API endpoint.
+        async function fetchData(endpoint) {
+            console.log(`Simulating a real-time fetch request to: ${endpoint}`);
+            // Simulating network delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if (endpoint === 'products') {
+                return { success: true, data: productData };
+            } else if (endpoint === 'blog') {
+                return { success: true, data: blogData };
+            }
+            return { success: false, message: 'Invalid endpoint' };
+        }
+
+        // --- Rendering Functions ---
+        async function renderHomePage() {
+            mainContent.innerHTML = `
+                <section class="bg-white rounded-3xl shadow-xl p-8 md:p-16 text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 text-gradient">Welcome to ShopSphere</h2>
+                    <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Discover a world of unique products and insightful articles. Our curated collection is designed to elevate your everyday life.</p>
+                    <a href="#" id="home-cta" class="mt-8 inline-block px-8 py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition-colors duration-200 transform hover:scale-105">Explore Products</a>
+                </section>
+            `;
+            // Add event listener for the CTA button after it's rendered
+            document.getElementById('home-cta').addEventListener('click', (e) => {
+                e.preventDefault();
+                renderProductsPage();
+            });
+        }
+
+        async function renderProductsPage() {
+            const response = await fetchData('products');
+            if (response.success) {
+                const products = response.data;
+                mainContent.innerHTML = `
+                    <h2 class="text-4xl font-bold text-gray-800 mb-8">Our Products</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        ${products.map(product => `
+                            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                                <div class="p-6">
+                                    <h3 class="font-bold text-xl text-gray-900 truncate">${product.name}</h3>
+                                    <p class="text-indigo-600 font-semibold mt-2">$${product.price.toFixed(2)}</p>
+                                    <button onclick="showProductDetails(${product.id})" class="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200">View Details</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                mainContent.innerHTML = `<p class="text-center text-red-500">Failed to load products: ${response.message}</p>`;
+            }
+        }
+
+        async function showProductDetails(id) {
+            const product = productData.find(p => p.id === id);
+            if (!product) return;
+
+            modalContent.innerHTML = `
+                <img src="${product.image}" alt="${product.name}" class="rounded-lg w-full md:w-1/2 object-cover">
+                <div class="flex flex-col gap-4 w-full md:w-1/2">
+                    <h3 class="text-3xl font-bold text-gray-900">${product.name}</h3>
+                    <p class="text-2xl font-semibold text-indigo-600">$${product.price.toFixed(2)}</p>
+                    <p class="text-gray-600 leading-relaxed">${product.description}</p>
+                    <button class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:bg-indigo-700 transition-colors duration-200 transform hover:scale-105">Add to Cart</button>
+                </div>
+            `;
+            productModal.classList.remove('hidden', 'opacity-0');
+            productModal.classList.add('flex', 'opacity-100');
+        }
+
+        function closeProductDetails() {
+            productModal.classList.remove('opacity-100', 'flex');
+            productModal.classList.add('opacity-0', 'hidden');
+        }
+
+        async function renderBlogPage() {
+            const response = await fetchData('blog');
+            if (response.success) {
+                const posts = response.data;
+                mainContent.innerHTML = `
+                    <h2 class="text-4xl font-bold text-gray-800 mb-8">Our Blog</h2>
+                    <div class="space-y-6">
+                        ${posts.map(post => `
+                            <div class="bg-white rounded-xl shadow-lg p-6">
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2">${post.title}</h3>
+                                <p class="text-gray-600">${post.snippet}</p>
+                                <a href="#" class="inline-block mt-4 text-indigo-600 font-medium hover:underline">Read More &rarr;</a>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                mainContent.innerHTML = `<p class="text-center text-red-500">Failed to load blog posts: ${response.message}</p>`;
+            }
+        }
+
+        // --- Event Listeners for Navigation ---
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderHomePage();
+        });
+
+        productsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderProductsPage();
+        });
+
+        blogLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderBlogPage();
+        });
+        
+        closeModalBtn.addEventListener('click', closeProductDetails);
+
+        // --- Initial Page Load ---
+        window.onload = renderHomePage;
+    </script>
+</body>
+</html>
